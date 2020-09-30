@@ -1,7 +1,7 @@
+FROM ubuntu:bionic
+
 LABEL vendor="Perforce Software"
 LABEL maintainer="Paul Allen (pallen@perforce.com)"
-
-FROM ubuntu:bionic
 
 ARG TZ=America/New_York
 
@@ -23,10 +23,9 @@ RUN \
   apt-get update
   
 RUN \
-  apt-get install -y helix-cli && \
-  apt-get install -y helix-swarm-triggers
-
-RUN sudo service p4search restart
+  apt-get install -y helix-p4search
+  
+RUN service p4search restart
 
 # ADD http://ftp.perforce.com/perforce/r16.1/bin.java/p4search.tgz /p4search.tgz 
 

@@ -1,7 +1,8 @@
+FROM ubuntu:bionic
+
 LABEL vendor="Perforce Software"
 LABEL maintainer="Paul Allen (pallen@perforce.com)"
 
-FROM ubuntu:bionic
 
 # --------------------------------------------------------------------------------
 # Docker ENVIRONMENT
