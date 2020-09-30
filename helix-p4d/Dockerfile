@@ -63,13 +63,15 @@ COPY files/restore.sh /usr/local/bin/restore.sh
 COPY files/empty_setup.sh /usr/local/bin/empty_setup.sh
 COPY files/init.sh /usr/local/bin/init.sh
 COPY files/latest_checkpoint.sh /usr/local/bin/latest_checkpoint.sh
+COPY files/typemap_ue4.sh /usr/local/bin/typemap_ue4.sh
 
 RUN \
   chmod +x /usr/local/bin/clean.sh && \
   chmod +x /usr/local/bin/restore.sh && \
   chmod +x /usr/local/bin/empty_setup.sh && \
   chmod +x /usr/local/bin/init.sh && \
-  chmod +x /usr/local/bin/latest_checkpoint.sh
+  chmod +x /usr/local/bin/latest_checkpoint.sh \
+  chmod +x /usr/local/bin/typemap_ue4.sh
 
 # Expose Perforce; TCP port and volumes
 EXPOSE $P4TCP
