@@ -12,11 +12,15 @@ RUN \
   echo "deb http://package.perforce.com/apt/ubuntu bionic release" > /etc/apt/sources.list.d/perforce.list && \
   apt-get update
   
-RUN apt-get install -y helix-cli
+RUN \
+  apt-get install -y helix-cli && \
+  apt-get install -y helix-swarm-triggers
 
-ADD http://ftp.perforce.com/perforce/r16.1/bin.java/p4search.tgz /p4search.tgz 
+RUN sudo service p4search restart
 
-RUN tar xfz /p4search.tgz
+# ADD http://ftp.perforce.com/perforce/r16.1/bin.java/p4search.tgz /p4search.tgz 
+
+# RUN tar xfz /p4search.tgz
 
 ## TODO - add triggers:
 #  SEARCH.change    form-commit   change "%//depot/p4search/install/search-queue.sh% -t change   -v %formname%"
