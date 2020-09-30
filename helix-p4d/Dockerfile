@@ -1,19 +1,7 @@
-# --------------------------------------------------------------------------------
-# Docker configuration for P4D
-# --------------------------------------------------------------------------------
-
 FROM ubuntu:bionic
 
 LABEL vendor="Perforce Software"
 LABEL maintainer="Paul Allen (pallen@perforce.com)"
-
-# Update Ubuntu and add Perforce Package Source
-RUN \
-  apt-get update && \
-  apt-get install -y wget unzip vim  && \
-  wget -qO - https://package.perforce.com/perforce.pubkey | apt-key add - && \
-  echo "deb http://package.perforce.com/apt/ubuntu bionic release" > /etc/apt/sources.list.d/perforce.list && \
-  apt-get update
 
 # --------------------------------------------------------------------------------
 # Docker ENVIRONMENT
@@ -26,6 +14,7 @@ ARG P4USER=super
 ARG P4PASSWD=Passw0rd
 ARG P4CASE=-C1
 ARG P4CHARSET=utf8
+ARG TZ=America/New_York
 
 # Dynamic Environment
 ENV P4NAME=$P4NAME \
@@ -35,7 +24,9 @@ ENV P4NAME=$P4NAME \
   P4PASSWD=$P4PASSWD \
   P4CASE=$P4CASE \
   P4CHARSET=$P4CHARSET \
-  JNL_PREFIX=$P4NAME
+  JNL_PREFIX=$P4NAME \
+  DEBIAN_FRONTEND=noninteractive \
+  TZ=$TZ
 
 # Base Environment
 ENV P4HOME=/p4
@@ -47,6 +38,24 @@ ENV P4ROOT=$P4HOME/root \
   P4CKP=$P4HOME/checkpoints \
   P4JOURNAL=$P4LOGDIR/journal \
   P4LOG=$P4LOGDIR/p4d.log
+
+# --------------------------------------------------------------------------------
+# Docker configuration for P4D
+# --------------------------------------------------------------------------------
+
+# Set Timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Update Ubuntu and add Perforce Package Source
+RUN \
+  apt-get update && \
+  apt-get install -y apt-utils && \
+  apt-get install -y gnupg2 && \
+  apt-get install -y wget unzip vim  && \
+  wget -qO - https://package.perforce.com/perforce.pubkey | apt-key add - && \
+  echo "deb http://package.perforce.com/apt/ubuntu bionic release" > /etc/apt/sources.list.d/perforce.list && \
+  apt-get update
+  
 
 # --------------------------------------------------------------------------------
 # Docker BUILD
@@ -70,7 +79,7 @@ RUN \
   chmod +x /usr/local/bin/restore.sh && \
   chmod +x /usr/local/bin/empty_setup.sh && \
   chmod +x /usr/local/bin/init.sh && \
-  chmod +x /usr/local/bin/latest_checkpoint.sh \
+  chmod +x /usr/local/bin/latest_checkpoint.sh && \
   chmod +x /usr/local/bin/typemap_ue4.sh
 
 # Expose Perforce; TCP port and volumes

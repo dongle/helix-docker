@@ -1,25 +1,7 @@
-# --------------------------------------------------------------------------------
-# Docker configuration for Swarm
-# --------------------------------------------------------------------------------
-
-FROM ubuntu:bionic
-
 LABEL vendor="Perforce Software"
 LABEL maintainer="Paul Allen (pallen@perforce.com)"
 
-# Update Ubuntu and add Perforce Package Source
-RUN \
-  apt-get update  && \
-  apt-get install -y wget curl unzip vim && \
-  wget -qO - https://package.perforce.com/perforce.pubkey | apt-key add - && \
-  echo "deb http://package.perforce.com/apt/ubuntu bionic release" > /etc/apt/sources.list.d/perforce.list && \
-  apt-get update
-
-# Create swarm user and install Helix Swarm
-RUN \
-  useradd --user-group --home-dir /home/swarm --create-home --uid 1000 swarm && \
-  apt-get install -y helix-cli && \
-  apt-get install -y -f helix-swarm
+FROM ubuntu:bionic
 
 # --------------------------------------------------------------------------------
 # Docker ENVIRONMENT
@@ -34,6 +16,7 @@ ARG SWARMUSER=swarm
 ARG SWARMPASSWD=$P4PASSWD
 ARG SWARMTOKEN=00000000-0000-0000-0000-000000000000
 ARG MAILHOST=swarm.helix
+ARG TZ=America/New_York
 
 # Configure Swarm Environment
 ENV P4PORT=$P4PORT \
@@ -43,7 +26,38 @@ ENV P4PORT=$P4PORT \
   SWARMUSER=$SWARMUSER \
   SWARMPASSWD=$SWARMPASSWD \
   SWARMTOKEN=$SWARMTOKEN \
-  MAILHOST=$MAILHOST
+  MAILHOST=$MAILHOST \
+  DEBIAN_FRONTEND=noninteractive \
+  TZ=$TZ
+
+
+# --------------------------------------------------------------------------------
+# Docker configuration for Swarm
+# --------------------------------------------------------------------------------
+
+# Set Timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Update Ubuntu and add Perforce Package Source
+RUN \
+  apt-get update  && \
+  apt-get install -y apt-utils && \
+  apt-get install -y gnupg2 && \
+  apt-get install -y wget curl unzip vim && \
+  wget -qO - https://package.perforce.com/perforce.pubkey | apt-key add - && \
+  echo "deb http://package.perforce.com/apt/ubuntu bionic release" > /etc/apt/sources.list.d/perforce.list && \
+  apt-get update
+
+
+# --------------------------------------------------------------------------------
+# Docker BUILD
+# --------------------------------------------------------------------------------
+
+# Create swarm user and install Helix Swarm
+RUN \
+  useradd --user-group --home-dir /home/swarm --create-home --uid 1000 swarm && \
+  apt-get install -y helix-cli && \
+  apt-get install -y -f helix-swarm
 
 EXPOSE 80
 
@@ -64,6 +78,7 @@ COPY files/swarm.p4s /home/swarm/swarm.p4s
 COPY files/client.p4s /home/swarm/client.p4s
 COPY files/swarm-trigger.pl /home/swarm/swarm-trigger.pl
 COPY files/swarm-trigger.conf /home/swarm/swarm-trigger.conf
+
 
 # --------------------------------------------------------------------------------
 # Docker RUN

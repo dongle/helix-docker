@@ -1,11 +1,21 @@
-FROM ubuntu:bionic
-
 LABEL vendor="Perforce Software"
 LABEL maintainer="Paul Allen (pallen@perforce.com)"
+
+FROM ubuntu:bionic
+
+ARG TZ=America/New_York
+
+ENV DEBIAN_FRONTEND=noninteractive \ 
+  TZ=$TZ
+
+# Set Timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Update Ubuntu and add Perforce Package Source
 RUN \
   apt-get update && \
+  apt-get install -y apt-utils && \
+  apt-get install -y gnupg2 && \
   apt-get install -y wget unzip vim netcat lsb-core net-tools rsyslog && \
   apt-get install -y openjdk-8-jdk && \
   wget -qO - https://package.perforce.com/perforce.pubkey | apt-key add - && \
