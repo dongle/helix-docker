@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
 LABEL vendor="Perforce Software"
 LABEL maintainer="Paul Allen (pallen@perforce.com)"
@@ -9,7 +9,7 @@ RUN \
   apt-get install -y wget unzip vim netcat lsb-core net-tools rsyslog && \
   apt-get install -y openjdk-8-jdk && \
   wget -qO - https://package.perforce.com/perforce.pubkey | apt-key add - && \
-  echo "deb http://package.perforce.com/apt/ubuntu xenial release" > /etc/apt/sources.list.d/perforce.list && \
+  echo "deb http://package.perforce.com/apt/ubuntu bionic release" > /etc/apt/sources.list.d/perforce.list && \
   apt-get update
   
 RUN apt-get install -y helix-cli

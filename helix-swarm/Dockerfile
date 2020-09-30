@@ -2,7 +2,7 @@
 # Docker configuration for Swarm
 # --------------------------------------------------------------------------------
 
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
 LABEL vendor="Perforce Software"
 LABEL maintainer="Paul Allen (pallen@perforce.com)"
@@ -12,14 +12,14 @@ RUN \
   apt-get update  && \
   apt-get install -y wget curl unzip vim && \
   wget -qO - https://package.perforce.com/perforce.pubkey | apt-key add - && \
-  echo "deb http://package.perforce.com/apt/ubuntu xenial release" > /etc/apt/sources.list.d/perforce.list && \
+  echo "deb http://package.perforce.com/apt/ubuntu bionic release" > /etc/apt/sources.list.d/perforce.list && \
   apt-get update
 
 # Create swarm user and install Helix Swarm
 RUN \
   useradd --user-group --home-dir /home/swarm --create-home --uid 1000 swarm && \
   apt-get install -y helix-cli && \
-  apt-get install -y -f helix-swarm=2019.1-1829459~xenial
+  apt-get install -y -f helix-swarm
 
 # --------------------------------------------------------------------------------
 # Docker ENVIRONMENT
